@@ -10,37 +10,96 @@
 
 <body>
   <div id="buttonClass"></div>
+  <br>
+  <form id="movie-form">
+    <label>Search for any Animal!</label>
+    <input type="text" id="animal-input">
+    <br>
+    <input id="add-animal" type="submit" value="Live Fast, Eat Trash">
+  </form>
+  <br>
+  <br>
+  <div id="animalsDiv"></div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script type="text/javascript">
 
     var animalsBro = ["dogs", "racoons", "possums", "dinosaur"];
 
+
     for (var i = 0; i < animalsBro.length; i++) {
 
       var addButton = $("<button>");
       addButton.text(animalsBro[i]);
       $("#buttonClass").prepend(addButton);
+      addButton.attr("cardValue", animalsBro[i]);
+
     };
 
-    var queryURL = "https://api.giphy.com/v1/gifs/random?api_key=BkaUZZWcFij6J7AoQj3WtPb1R2p9O6V9&tag=cats"
 
-    $("button").on("click",function(){
+    $("button").on("click", function () {
 
-      console.log("hey");
-
+      var valueDog = $(this).attr("cardValue");
 
 
+      var queryURL = "https://api.giphy.com/v1/gifs/search?q=" +
+        valueDog + "&api_key=BkaUZZWcFij6J7AoQj3WtPb1R2p9O6V9&limit=10";
 
 
+      $.ajax({
+        url: queryURL,
+        method: "GET"
+      })
+        .then(function (res) {
+          let data = res.data;
+          console.log(data);
 
+          for (var i = 0; i < data.length; i++) {
+            var divTagger = $("<div>");
+            var gifer = $("<img>");
+            gifer.attr({
+              "src": data[i].images.downsized_still.url,
+              "class": "gif",
+              "data-still": data[i].images.downsized_still.url,
+              "data-animate": data[i].images.downsized_medium.url,
+              "data-state": "still",
+            })
+            divTagger.append(gifer);
+
+            $("#animalsDiv").prepend(divTagger);
+
+          }
+        });
+
+      console.log(valueDog);
 
     });
 
 
 
+    $("#animalsDiv").on("click", ".gif", function () {
+      console.log('this:', this);
+      var state = $(this).attr("data-state");
+      if (state === "still") {
+        $(this).attr("src", $(this).attr("data-animate"));
+        $(this).attr("data-state", "animate");
+      } else {
+        $(this).attr("src", $(this).attr("data-still"));
+        $(this).attr("data-state", "still");
+      }
+    });
 
 
+    $("#add-animal").on("click", function (event) {
+
+      event.preventDefault();
+
+      var tarzan = $("#animal-input").val().trim();
+
+      animalsBro.push(tarzan);
+      console.log(tarzan);
+
+    });
 
 
 
