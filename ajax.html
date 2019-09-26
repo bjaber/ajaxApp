@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+​
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Document</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
+​
 
 <body>
   <div id="buttonClass"></div>
@@ -16,35 +19,30 @@
     <input type="text" id="animal-input">
     <br>
     <input id="add-animal" type="submit" value="Live Fast, Eat Trash">
+  </div>
   </form>
   <br>
   <br>
   <div id="animalsDiv"></div>
-
+  ​</div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script type="text/javascript">
 
     var animalsBro = ["dogs", "racoons", "possums", "dinosaur"];
-
+    var valueDog;//what purpose does this have?
+    console.log(animalsBro);
 
     for (var i = 0; i < animalsBro.length; i++) {
-
       var addButton = $("<button>");
       addButton.text(animalsBro[i]);
       $("#buttonClass").prepend(addButton);
       addButton.attr("cardValue", animalsBro[i]);
-
     };
 
 
-    $("button").on("click", function () {
-
-      var valueDog = $(this).attr("cardValue");
-
-
+    function apiCallDog() {
       var queryURL = "https://api.giphy.com/v1/gifs/search?q=" +
         valueDog + "&api_key=BkaUZZWcFij6J7AoQj3WtPb1R2p9O6V9&limit=10";
-
 
       $.ajax({
         url: queryURL,
@@ -53,7 +51,7 @@
         .then(function (res) {
           let data = res.data;
           console.log(data);
-
+          $("#animalsDiv").empty();
           for (var i = 0; i < data.length; i++) {
             var divTagger = $("<div>");
             var gifer = $("<img>");
@@ -63,20 +61,19 @@
               "data-still": data[i].images.downsized_still.url,
               "data-animate": data[i].images.downsized_medium.url,
               "data-state": "still",
-            })
+            });
             divTagger.append(gifer);
-
             $("#animalsDiv").prepend(divTagger);
-
           }
         });
-
+    }
+    //
+    $("#buttonClass").on("click", "button", function () {
+      valueDog = $(this).attr("cardValue");
+      apiCallDog();
       console.log(valueDog);
-
     });
-
-
-
+    //
     $("#animalsDiv").on("click", ".gif", function () {
       console.log('this:', this);
       var state = $(this).attr("data-state");
@@ -89,21 +86,23 @@
       }
     });
 
-
     $("#add-animal").on("click", function (event) {
 
       event.preventDefault();
-
       var tarzan = $("#animal-input").val().trim();
-
       animalsBro.push(tarzan);
-      console.log(tarzan);
-
+      var addUserButton = $("<button>");
+      addUserButton.text(tarzan);
+      addUserButton.attr("cardValue", tarzan);
+      $("#buttonClass").prepend(addUserButton);
+      console.log(animalsBro);
+      $("#animal-input").empty();
     });
 
 
 
   </script>
 </body>
+​
 
 </html>
